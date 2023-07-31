@@ -1,7 +1,5 @@
-import 'dart:convert';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -41,23 +39,44 @@ class _MyHomePageState extends State<MyHomePage> {
       'userId': 1,
     };
 
-    http.Response response = await http.post(
-      Uri.parse('http://jsonplaceholder.typicode.com/posts'),
-      headers: headers,
-      body: json.encode(body),
-    );
+    final dio = Dio();
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      // print(response.body);
-      // List result = json.decode(response.body);
-      // for (var item in result) {
-      //   print(item['title']);
-      // }
+    try {
+      Response response = await dio.post(
+        'http://jsonplaceholder.typicode.com/posts',
+        options: Options(
+          headers: headers,
+        ),
+        data: body,
+      );
+      print(response.data);
 
-      print(response.body);
-    } else {
-      print('Aconteceu um erro: ${response.statusCode}');
+      // throw 'Erro customizado';
+    } on DioError catch (e) {
+      print('Erro na request: ${e.response?.statusCode}');
+
+      // print('Error generico: $e');
     }
+
+    // http.Response response = await http.post(
+    //   Uri.parse('http://jsonplaceholder.typicode.com/posts'),
+    //   headers: headers,
+    //   body: json.encode(body),
+    // );
+
+    // if (response.statusCode >= 200 && response.statusCode < 300) {
+    //   // Usando lib do http
+    //   // print(response.body);
+    //   // List result = json.decode(response.body);
+    //   // for (var item in result) {
+    //   //   print(item['title']);
+    //   // }
+
+    //   print(response.body);
+    // } else {
+    //   // Usando lib do http
+    //   //print('Aconteceu um erro: ${response.statusCode}');
+    // }
   }
 
   @override
